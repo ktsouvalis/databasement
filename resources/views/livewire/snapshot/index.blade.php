@@ -50,9 +50,7 @@
                             <span class="text-sm text-base-content/60 truncate">{{ $snapshot->databaseServer?->name ?? __('(unknown)') }}</span>
                         </div>
                         <div class="flex items-center gap-2 mt-1 flex-wrap">
-                            <span class="tooltip" data-tip="{{ $snapshot->id }}">
-                                <kbd class="kbd kbd-xs font-mono">#{{ \Illuminate\Support\Str::substr($snapshot->id, -7) }}</kbd>
-                            </span>
+                            <x-id-popover :id="$snapshot->id" />
                             @if($fileMissing)
                                 <x-popover>
                                     <x-slot:trigger>

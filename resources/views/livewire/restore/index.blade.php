@@ -90,9 +90,7 @@
                 </div>
 
                 <div class="mt-1.5">
-                    <span class="tooltip" data-tip="{{ $restore->id }}">
-                        <kbd class="kbd kbd-xs font-mono">#{{ \Illuminate\Support\Str::substr($restore->id, -7) }}</kbd>
-                    </span>
+                    <x-id-popover :id="$restore->id" />
                 </div>
             @endscope
 
