@@ -71,7 +71,20 @@ jobs:
         ports:
           - 1433:1433
         options: >-
-          --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Databasement!Strong1 -Q 'SELECT 1' || exit 0"
+          --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Databasement!Strong1 -Q 'SELECT 1'"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=20
+
+      firebird:
+        image: firebirdsql/firebird:5
+        env:
+          FIREBIRD_ROOT_PASSWORD: masterkey
+          FIREBIRD_DATABASE: sample.fdb
+        ports:
+          - 3050:3050
+        options: >-
+          --health-cmd="echo 'QUIT;' | isql -user SYSDBA -password masterkey /var/lib/firebird/data/sample.fdb"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=20
