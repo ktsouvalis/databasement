@@ -81,9 +81,13 @@ enum NotificationChannelType: string
     public function routeValue(array $config): string|array|null
     {
         return match ($this) {
-            self::Email => array_values(
-                array_filter(array_map('trim', explode(',', $config['to'] ?? '')))
-            ),
+            self::Email => (static function (mixed $rawTo): array {
+                if (! is_string($rawTo)) {
+                    return [];
+                }
+
+                return array_values(array_filter(array_map('trim', explode(',', $rawTo))));
+            })($config['to'] ?? null),
             self::Slack => $config['webhook_url'] ?? null,
             self::Discord => $config['channel_id'] ?? null,
             self::DiscordWebhook, self::Gotify, self::Webhook => $config['url'] ?? null,
