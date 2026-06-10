@@ -97,17 +97,6 @@
                                   class="btn-outline btn-success btn-sm" />
                     @endcan
                     @can('viewForm', $server)
-                        @if($server->backups->isNotEmpty())
-                            <x-button
-                                :label="$server->backups_enabled ? __('Disable Backup') : __('Enable Backup')"
-                                :icon="$server->backups_enabled ? 'o-pause-circle' : 'o-play-circle'"
-                                wire:click="toggleBackupsEnabled"
-                                spinner
-                                class="btn-outline btn-sm"
-                            />
-                        @endif
-                    @endcan
-                    @can('viewForm', $server)
                         <x-button :label="__('Edit')" icon="o-pencil" link="{{ route('database-servers.edit', $server) }}"
                                   class="btn-primary btn-sm" wire:navigate />
                     @endcan

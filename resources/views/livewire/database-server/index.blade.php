@@ -150,7 +150,7 @@
                                      wire:click="confirmRestore('{{ $server->id }}')" spinner
                                      class="text-success" />
                     @endcan
-                    @can('viewForm', $server)
+                    @can('update', $server)
                         @if($server->backups->isNotEmpty())
                             <x-menu-item
                                 :title="$server->backups_enabled ? __('Disable Backup') : __('Enable Backup')"

@@ -107,7 +107,7 @@ test('runBackupAll dispatches backup jobs for all backup configs on the server',
     expect($snapshotBackupIds->all())->toBe($backupIds->all());
 });
 
-test('user can disable backups for a server from the index', function () {
+test('user can toggle backups for a server from the index', function () {
     $user = User::factory()->create();
     $server = DatabaseServer::factory()->create(['backups_enabled' => true]);
 
@@ -116,11 +116,6 @@ test('user can disable backups for a server from the index', function () {
         ->call('toggleBackupsEnabled', $server->id);
 
     expect($server->fresh()->backups_enabled)->toBeFalse();
-});
-
-test('user can enable backups for a server from the index', function () {
-    $user = User::factory()->create();
-    $server = DatabaseServer::factory()->create(['backups_enabled' => false]);
 
     Livewire::actingAs($user)
         ->test(Index::class)
@@ -128,4 +123,3 @@ test('user can enable backups for a server from the index', function () {
 
     expect($server->fresh()->backups_enabled)->toBeTrue();
 });
-

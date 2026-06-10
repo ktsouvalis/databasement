@@ -164,7 +164,7 @@ class Index extends Component
     {
         $server = DatabaseServer::findOrFail($id);
 
-        $this->authorize('viewForm', $server);
+        $this->authorize('update', $server);
 
         $server->update(['backups_enabled' => ! $server->backups_enabled]);
 
@@ -174,7 +174,6 @@ class Index extends Component
                 : __('Backups disabled successfully!')
         );
     }
-
 
     public function render(): View
     {
