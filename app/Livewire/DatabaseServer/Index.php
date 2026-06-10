@@ -160,6 +160,15 @@ class Index extends Component
         $this->triggerAllBackups($server, $action);
     }
 
+    public function toggleBackupsEnabled(string $id): void
+    {
+        $server = DatabaseServer::findOrFail($id);
+
+        $this->authorize('viewForm', $server);
+
+        $server->update(['backups_enabled' => ! $server->backups_enabled]);
+    }
+
     public function render(): View
     {
         $servers = DatabaseServerQuery::buildFromParams(
