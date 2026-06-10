@@ -151,12 +151,14 @@
                                      class="text-success" />
                     @endcan
                     @can('viewForm', $server)
-                        <x-menu-item
-                            :title="$server->backups_enabled ? __('Disable Backup') : __('Enable Backup')"
-                            :icon="$server->backups_enabled ? 'o-pause-circle' : 'o-play-circle'"
-                            wire:click="toggleBackupsEnabled('{{ $server->id }}')"
-                            spinner
-                        />
+                        @if($server->backups->isNotEmpty())
+                            <x-menu-item
+                                :title="$server->backups_enabled ? __('Disable Backup') : __('Enable Backup')"
+                                :icon="$server->backups_enabled ? 'o-pause-circle' : 'o-play-circle'"
+                                wire:click="toggleBackupsEnabled('{{ $server->id }}')"
+                                spinner
+                            />
+                        @endif
                     @endcan
                     @can('viewForm', $server)
                         <x-menu-item :title="__('Edit')" icon="o-pencil"
