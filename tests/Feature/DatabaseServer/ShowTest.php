@@ -83,7 +83,7 @@ test('confirmRestore on a Redis server opens the redis info modal', function () 
         ->assertSet('showRedisRestoreModal', true);
 });
 
-test('admin can disable backups for a server from the show page', function () {
+test('user can disable backups for a server from the show page', function () {
     $user = User::factory()->create();
     $server = DatabaseServer::factory()->create(['backups_enabled' => true]);
 
@@ -94,7 +94,7 @@ test('admin can disable backups for a server from the show page', function () {
     expect($server->fresh()->backups_enabled)->toBeFalse();
 });
 
-test('admin can enable backups for a server from the show page', function () {
+test('user can enable backups for a server from the show page', function () {
     $user = User::factory()->create();
     $server = DatabaseServer::factory()->create(['backups_enabled' => false]);
 

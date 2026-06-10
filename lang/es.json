@@ -85,6 +85,8 @@
   "Backup file not found.": "Archivo de backup no encontrado.",
   "Backup schedule deleted.": "Programación de backup eliminada.",
   "Backup schedule saved.": "Programación de backup guardada.",
+  "Backups enabled successfully!": "Backups activados correctamente.",
+  "Backups disabled successfully!": "Backups desactivados correctamente.",
   "Backups will be stored in the specified root directory on the FTP server. Enable SSL/TLS for encrypted connections (FTPS).": "Los backups se almacenarán en el directorio raíz especificado en el servidor FTP. Active SSL/TLS para conexiones cifradas (FTPS).",
   "Backups will be stored in the specified root directory on the SFTP server.": "Los backups se almacenarán en el directorio raíz especificado en el servidor SFTP.",
   "Base URL of your Gotify server (e.g. https://gotify.example.com).": "URL base de su servidor Gotify (ej.: https://gotify.example.com).",

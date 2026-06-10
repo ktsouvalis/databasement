@@ -107,7 +107,7 @@ test('runBackupAll dispatches backup jobs for all backup configs on the server',
     expect($snapshotBackupIds->all())->toBe($backupIds->all());
 });
 
-test('admin can disable backups for a server from the index', function () {
+test('user can disable backups for a server from the index', function () {
     $user = User::factory()->create();
     $server = DatabaseServer::factory()->create(['backups_enabled' => true]);
 
@@ -118,7 +118,7 @@ test('admin can disable backups for a server from the index', function () {
     expect($server->fresh()->backups_enabled)->toBeFalse();
 });
 
-test('admin can enable backups for a server from the index', function () {
+test('user can enable backups for a server from the index', function () {
     $user = User::factory()->create();
     $server = DatabaseServer::factory()->create(['backups_enabled' => false]);
 

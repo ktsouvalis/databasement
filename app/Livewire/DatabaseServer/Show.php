@@ -68,7 +68,14 @@ class Show extends Component
         $this->authorize('viewForm', $this->server);
 
         $this->server->update(['backups_enabled' => ! $this->server->backups_enabled]);
+
+        $this->success(
+            title: $this->server->backups_enabled
+                ? __('Backups enabled successfully!')
+                : __('Backups disabled successfully!')
+        );
     }
+
 
 
     public function confirmRestore(): void
