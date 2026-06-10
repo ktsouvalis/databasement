@@ -76,11 +76,14 @@ enum NotificationChannelType: string
      * Get the route value from decrypted config for notification dispatch.
      *
      * @param  array<string, mixed>  $config
+     * @return string|list<string>|null
      */
-    public function routeValue(array $config): ?string
+    public function routeValue(array $config): string|array|null
     {
         return match ($this) {
-            self::Email => $config['to'] ?? null,
+            self::Email => array_values(
+                array_filter(array_map('trim', explode(',', $config['to'] ?? '')))
+            ),
             self::Slack => $config['webhook_url'] ?? null,
             self::Discord => $config['channel_id'] ?? null,
             self::DiscordWebhook, self::Gotify, self::Webhook => $config['url'] ?? null,

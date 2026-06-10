@@ -128,7 +128,26 @@ class NotificationChannelForm extends Form
 
         return match ($type) {
             NotificationChannelType::Email => array_merge($rules, [
-                'config_to' => ['required', 'email', 'max:255'],
+                'config_to' => [
+                    'required',
+                    'string',
+                    'max:1000',
+                    function (string $attribute, mixed $value, \Closure $fail) {
+                        $emails = array_filter(array_map('trim', explode(',', $value)));
+                        if (empty($emails)) {
+                            $fail(__('At least one email address is required.'));
+
+                            return;
+                        }
+                        foreach ($emails as $email) {
+                            if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                                $fail(__(':value is not a valid email address.', ['value' => $email]));
+
+                                return;
+                            }
+                        }
+                    },
+                ],
             ]),
             NotificationChannelType::Slack => array_merge($rules, [
                 'config_webhook_url' => [($isEdit && $this->has_config_webhook_url) ? 'nullable' : 'required', 'string', 'url', 'max:500'],

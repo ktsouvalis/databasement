@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\NotificationChannelType;
 use App\Enums\UserRole;
 use App\Livewire\Configuration\Notification;
 use App\Models\NotificationChannel;
@@ -162,4 +163,35 @@ test('editing a channel preserves sensitive fields when left blank', function ()
     $updated = $channel->fresh();
     expect($updated->name)->toBe('Updated Slack')
         ->and($updated->config['webhook_url'])->not->toBeEmpty();
+});
+
+test('admin can create email channel with multiple addresses', function () {
+    Livewire::actingAs(User::factory()->create(['role' => UserRole::Admin]))
+        ->test(Notification::class)
+        ->call('openChannelModal')
+        ->set('channelForm.name', 'Team Alerts')
+        ->set('channelForm.type', 'email')
+        ->set('channelForm.config_to', 'alice@example.com, bob@example.com')
+        ->call('saveChannel')
+        ->assertHasNoErrors()
+        ->assertSet('showChannelModal', false);
+
+    $channel = NotificationChannel::where('name', 'Team Alerts')->firstOrFail();
+    expect($channel->config['to'])->toBe('alice@example.com, bob@example.com');
+});
+
+test('email channel rejects invalid address in comma-separated list', function () {
+    Livewire::actingAs(User::factory()->create(['role' => UserRole::Admin]))
+        ->test(Notification::class)
+        ->call('openChannelModal')
+        ->set('channelForm.name', 'Team Alerts')
+        ->set('channelForm.type', 'email')
+        ->set('channelForm.config_to', 'alice@example.com, not-an-email')
+        ->call('saveChannel')
+        ->assertHasErrors(['channelForm.config_to']);
+});
+
+test('email routeValue parses comma-separated addresses into an array', function () {
+    $routes = NotificationChannelType::Email->routeValue(['to' => 'alice@example.com, bob@example.com']);
+    expect($routes)->toBe(['alice@example.com', 'bob@example.com']);
 });

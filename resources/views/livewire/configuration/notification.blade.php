@@ -86,7 +86,7 @@
 
             {{-- Type-specific config fields --}}
             @if ($channelForm->type === 'email')
-                <x-input wire:model="channelForm.config_to" :label="__('Recipient Email')" type="email" required />
+                <x-input wire:model="channelForm.config_to" :label="__('Recipient Emails')" :hint="__('Separate multiple addresses with a comma.')" required />
             @elseif ($channelForm->type === 'slack')
                 <x-password wire:model="channelForm.config_webhook_url" :label="__('Webhook URL')" :placeholder="$channelForm->has_config_webhook_url ? '********' : ''" />
             @elseif ($channelForm->type === 'discord')

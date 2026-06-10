@@ -9,7 +9,7 @@ class ChannelNotifiable
     use Notifiable;
 
     /**
-     * @param  array<string, string>  $routes
+     * @param  array<string, string|list<string>>  $routes
      * @param  array<string, mixed>  $channelConfig
      */
     public function __construct(
