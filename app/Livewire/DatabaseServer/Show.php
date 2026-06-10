@@ -63,6 +63,14 @@ class Show extends Component
         $this->triggerAllBackups($this->server, $action);
     }
 
+    public function toggleBackupsEnabled(): void
+    {
+        $this->authorize('viewForm', $this->server);
+
+        $this->server->update(['backups_enabled' => ! $this->server->backups_enabled]);
+    }
+
+
     public function confirmRestore(): void
     {
         $this->authorize('restore', $this->server);
