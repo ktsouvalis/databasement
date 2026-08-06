@@ -26,11 +26,14 @@ use Dedoc\Scramble\Support\Generator\Parameter;
 use Dedoc\Scramble\Support\Generator\Schema;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
 use Dedoc\Scramble\Support\Generator\Types\StringType;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Silber\Bouncer\BouncerFacade as Bouncer;
@@ -108,6 +111,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerOidcSocialiteProvider();
         $this->validateOAuthConfiguration();
         $this->registerBouncer();
+        $this->configureApiRateLimiting();
 
         // Mary UI 2.9's <x-tab> references <x-mary-badge> internally, but its
         // service provider only registers the `mary-` internal alias for a fixed
@@ -172,6 +176,30 @@ class AppServiceProvider extends ServiceProvider
 
             return null;
         });
+    }
+
+    /**
+     * Configure rate limits for the v1 API.
+     *
+     * Keyed per access token so each credential has its own budget instead of
+     * sharing one bucket across every token a user holds; falls back to the
+     * client IP when there is no token (e.g. an unauthenticated request that
+     * still reaches a throttled route).
+     */
+    private function configureApiRateLimiting(): void
+    {
+        RateLimiter::for('api', function (Request $request) {
+            return Limit::perMinute(120)->by($this->apiRateLimitKey($request));
+        });
+
+        RateLimiter::for('api-actions', function (Request $request) {
+            return Limit::perMinute(10)->by($this->apiRateLimitKey($request));
+        });
+    }
+
+    private function apiRateLimitKey(Request $request): string
+    {
+        return optional($request->user()?->currentAccessToken())->id ?? $request->ip();
     }
 
     /**

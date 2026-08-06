@@ -11,17 +11,13 @@ use App\Http\Controllers\Api\V1\UserOrganizationController;
 use App\Http\Controllers\Api\V1\VolumeController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth:sanctum'])->name('api.')->prefix('v1')->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:api'])->name('api.')->prefix('v1')->group(function () {
     Route::apiResource('database-servers', DatabaseServerController::class)
         ->only(['index', 'show', 'store', 'destroy']);
     Route::put('database-servers/{database_server}', [DatabaseServerController::class, 'update'])
         ->name('database-servers.update');
     Route::get('database-servers/{database_server}/test-connection', [DatabaseServerController::class, 'testConnection'])
         ->name('database-servers.test-connection');
-    Route::post('database-servers/{database_server}/backup', [DatabaseServerController::class, 'backup'])
-        ->name('database-servers.backup');
-    Route::post('database-servers/{database_server}/restore', [DatabaseServerController::class, 'restore'])
-        ->name('database-servers.restore');
 
     Route::apiResource('database-server-ssh-configs', DatabaseServerSshConfigController::class)
         ->only(['index', 'show', 'store', 'destroy']);
@@ -52,11 +48,20 @@ Route::middleware(['auth:sanctum'])->name('api.')->prefix('v1')->group(function 
         ->only(['index', 'show', 'store', 'destroy']);
     Route::put('scheduled-restores/{scheduled_restore}', [ScheduledRestoreController::class, 'update'])
         ->name('scheduled-restores.update');
-    Route::post('scheduled-restores/{scheduled_restore}/run', [ScheduledRestoreController::class, 'run'])
-        ->name('scheduled-restores.run');
 
     Route::get('user/organizations', [UserOrganizationController::class, 'index'])
         ->name('user.organizations');
+});
+
+// Trigger-action endpoints kick off queued backup/restore work, so they get a
+// tighter throttle than plain CRUD reads/writes.
+Route::middleware(['auth:sanctum', 'throttle:api-actions'])->name('api.')->prefix('v1')->group(function () {
+    Route::post('database-servers/{database_server}/backup', [DatabaseServerController::class, 'backup'])
+        ->name('database-servers.backup');
+    Route::post('database-servers/{database_server}/restore', [DatabaseServerController::class, 'restore'])
+        ->name('database-servers.restore');
+    Route::post('scheduled-restores/{scheduled_restore}/run', [ScheduledRestoreController::class, 'run'])
+        ->name('scheduled-restores.run');
 });
 
 // Agent API routes — authenticated via Sanctum with agent-specific token check
