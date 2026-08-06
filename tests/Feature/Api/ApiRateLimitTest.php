@@ -3,6 +3,7 @@
 use App\Enums\Ability;
 use App\Models\User;
 use App\Support\BouncerScope;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Queue;
 
 /**
@@ -21,6 +22,21 @@ test('general api routes are throttled to 120 requests per minute', function () 
     }
 
     $this->withToken($token)
+        ->getJson('/api/v1/user/organizations')
+        ->assertStatus(429);
+
+    // A second token for the same user has its own, independent bucket — the
+    // limit is per credential, not per user. RequestGuard caches the resolved
+    // user for the lifetime of the test's Auth manager, so it must be cleared
+    // or every subsequent request would keep resolving the first token.
+    $secondToken = $user->createToken('api-2')->plainTextToken;
+    Auth::forgetGuards();
+
+    for ($i = 0; $i < 120; $i++) {
+        $this->withToken($secondToken)->getJson('/api/v1/user/organizations')->assertOk();
+    }
+
+    $this->withToken($secondToken)
         ->getJson('/api/v1/user/organizations')
         ->assertStatus(429);
 });
