@@ -15,7 +15,23 @@ return [
     | Agent daemon routes (/api/v1/agent/*) are deliberately excluded from
     | this limit — see routes/api.php.
     |
+    | Only an explicit non-negative integer is honored. Anything else (unset,
+    | blank, non-numeric, or negative) falls back to the default rather than
+    | being coerced to 0, so a malformed value can never silently disable
+    | throttling.
+    |
     */
 
-    'rate_limit' => max(0, (int) env('API_RATE_LIMIT', 300)),
+    'rate_limit' => (static function (): int {
+        $default = 300;
+        $raw = env('API_RATE_LIMIT');
+
+        if (! is_string($raw) && ! is_int($raw)) {
+            return $default;
+        }
+
+        $value = filter_var($raw, FILTER_VALIDATE_INT);
+
+        return $value !== false && $value >= 0 ? $value : $default;
+    })(),
 ];
